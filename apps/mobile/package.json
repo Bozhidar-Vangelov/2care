@@ -1,0 +1,17 @@
+{
+  "name": "@2care/mobile",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "echo build mobile",
+    "dev": "echo dev mobile && sleep 99999",
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx --no-error-on-unmatched-pattern",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"(mobile tests)\""
+  },
+  "dependencies": {
+    "@2care/shared": "workspace:*",
+    "@2care/schemas": "workspace:*",
+    "@2care/types": "workspace:*"
+  }
+}

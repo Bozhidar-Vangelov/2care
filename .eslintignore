@@ -1,0 +1,10 @@
+# Ignore build artifacts & externals
+node_modules/
+dist/
+build/
+.next/
+coverage/
+.expo/
+android/
+ios/
+.turbo/

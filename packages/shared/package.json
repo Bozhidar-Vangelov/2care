@@ -1,0 +1,18 @@
+{
+  "name": "@2care/shared",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -w -p tsconfig.json",
+    "lint": "eslint src --ext .ts,.tsx,.js,.jsx --no-error-on-unmatched-pattern",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"(add tests)\""
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

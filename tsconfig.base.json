@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "target": "ES2021",
+        "module": "ESNext",
+        "moduleResolution": "Bundler",
+        "resolveJsonModule": true,
+        "baseUrl": ".",
+        "paths": {
+            "@2care/shared/*": [
+                "packages/shared/src/*"
+            ],
+            "@2care/schemas/*": [
+                "packages/schemas/src/*"
+            ],
+            "@2care/types/*": [
+                "packages/types/src/*"
+            ]
+        },
+        "strict": true,
+        "skipLibCheck": true
+    }
+}
