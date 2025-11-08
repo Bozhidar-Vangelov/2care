@@ -1,0 +1,24 @@
+name: Feature
+description: Feature request or enhancement
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What problem does this solve?
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance Criteria
+      description: Bullet points of what "done" means
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: ["api", "web", "mobile", "schemas", "shared", "infra", "devex"]
+  - type: input
+    id: milestone
+    attributes:
+      label: Milestone
+      placeholder: e.g. Project Setup & Infrastructure
