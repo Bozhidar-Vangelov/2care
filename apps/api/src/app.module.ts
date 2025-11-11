@@ -1,18 +1,25 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UsersModule } from './modules/users/users.module';
+import { validateEnv } from './config/validation.schema';
+import { PrismaService } from './core/infrastructure/database/prisma.service';
+import { PrismaModule } from './core/infrastructure/database/prisma/prisma.module';
+import { ActivitiesModule } from './modules/activities/activities.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { BabiesModule } from './modules/babies/babies.module';
-import { ActivitiesModule } from './modules/activities/activities.module';
 import { FamiliesModule } from './modules/families/families.module';
-import { NotificationsModule } from './modules/notifications/notifications.module';
 import { HealthModule } from './modules/health/health.module';
-import { PrismaModule } from './core/infrastructure/database/prisma/prisma.module';
-import { PrismaService } from './core/infrastructure/database/prisma.service';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env'],
+      validate: validateEnv,
+    }),
     UsersModule,
     AuthModule,
     BabiesModule,
