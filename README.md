@@ -26,7 +26,7 @@ A Turborepo-powered monorepo for **2Care** — a co-parenting baby care app acro
 
 ## ⚙️ Requirements
 
-- **Node.js**: 20.x  
+- **Node.js**: 20.x
 - **pnpm**: 10.20.0 (via Corepack)
 - **Git**: latest recommended version
 
@@ -122,7 +122,7 @@ Excerpt from `turbo.json`:
 ```json
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "build/**"]
@@ -135,8 +135,8 @@ Excerpt from `turbo.json`:
 }
 ```
 
-- **Caching**: speeds up builds  
-- **Topological builds**: builds dependencies first  
+- **Caching**: speeds up builds
+- **Topological builds**: builds dependencies first
 
 ---
 
@@ -144,25 +144,29 @@ Excerpt from `turbo.json`:
 
 ### Commit Messages (Conventional Commits)
 
-Format:  
+Format:
+
 ```
 type(scope): message
 ```
 
 Examples:
+
 - `feat(api): add vaccination reminders`
 - `fix(mobile): debounce feeding log submit`
 - `chore(repo): add turbo cache to CI`
 
 Common types:
-- `feat` — new feature  
-- `fix` — bug fix  
-- `chore` — infra/tooling  
-- `docs` — documentation  
-- `refactor` — code cleanup  
-- `test` — tests only  
+
+- `feat` — new feature
+- `fix` — bug fix
+- `chore` — infra/tooling
+- `docs` — documentation
+- `refactor` — code cleanup
+- `test` — tests only
 
 **Enforced via**:
+
 - `commitlint` (checks messages)
 - `husky` (`commit-msg` hook)
 
@@ -177,6 +181,7 @@ Common types:
 ### Pre-commit Hooks
 
 Husky hooks:
+
 ```
 .husky/pre-commit  → pnpm lint -w
 .husky/commit-msg  → commitlint --edit
@@ -188,8 +193,8 @@ Husky hooks:
 
 Runs on each PR and push to `main`:
 
-1. Checkout + install deps with pnpm  
-2. Restore Turbo cache  
+1. Checkout + install deps with pnpm
+2. Restore Turbo cache
 3. Run `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test`
 
 Make these checks **required** in branch protection.
@@ -201,9 +206,9 @@ Workflow file:
 
 ## 🗂️ Project Management
 
-- **Milestones** = Epics  
-- **GitHub Project Board** = Roadmap / Sprints  
-  - Fields: Status, Priority, Target, Area  
+- **Milestones** = Epics
+- **GitHub Project Board** = Roadmap / Sprints
+  - Fields: Status, Priority, Target, Area
   - Automation: new issues & PRs auto-added
 - **Labels**:
   - Type: `type:feature`, `type:bug`, `type:chore`, `type:docs`
@@ -232,6 +237,7 @@ Workflow file:
 ## 🩺 Troubleshooting
 
 **pnpm not found**
+
 ```bash
 corepack enable
 corepack prepare pnpm@10.20.0 --activate
