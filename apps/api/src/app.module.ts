@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import type { Request, Response } from 'express';
+import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validateEnv } from './config/validation.schema';
@@ -15,6 +17,40 @@ import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
+        transport:
+          process.env.NODE_ENV !== 'production'
+            ? {
+                target: 'pino-pretty',
+                options: {
+                  colorize: true,
+                  singleLine: true,
+                  translateTime: 'SYS:standard',
+                  ignore: 'pid,hostname',
+                },
+              }
+            : undefined,
+        customProps: () => ({
+          context: 'HTTP',
+        }),
+        serializers: {
+          req(req: Request) {
+            return {
+              id: req.id,
+              method: req.method,
+              url: req.url,
+            };
+          },
+          res(res: Response) {
+            return {
+              statusCode: res.statusCode,
+            };
+          },
+        },
+      },
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
