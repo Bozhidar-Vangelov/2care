@@ -1,4 +1,38 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import {
+  HealthCheck,
+  HealthCheckService,
+  PrismaHealthIndicator,
+  MemoryHealthIndicator,
+  DiskHealthIndicator,
+} from '@nestjs/terminus';
+import { PrismaService } from '@/core/infrastructure/database/prisma/prisma.service';
 
-@Controller('health')
-export class HealthController {}
+@ApiTags('health')
+@Controller({ path: 'health', version: '1' })
+export class HealthController {
+  constructor(
+    private health: HealthCheckService,
+    private prismaHealth: PrismaHealthIndicator,
+    private memory: MemoryHealthIndicator,
+    private disk: DiskHealthIndicator,
+    private prisma: PrismaService,
+  ) {}
+
+  @Get()
+  @HealthCheck()
+  @ApiOperation({ summary: 'Check application health' })
+  check() {
+    return this.health.check([
+      () => this.prismaHealth.pingCheck('database', this.prisma),
+      () => this.memory.checkHeap('memory_heap', 150 * 1024 * 1024),
+      () => this.memory.checkRSS('memory_rss', 150 * 1024 * 1024),
+      () =>
+        this.disk.checkStorage('storage', {
+          path: '/',
+          thresholdPercent: 0.9,
+        }),
+    ]);
+  }
+}

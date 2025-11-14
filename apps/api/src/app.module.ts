@@ -14,9 +14,18 @@ import { FamiliesModule } from './modules/families/families.module';
 import { HealthModule } from './modules/health/health.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { UsersModule } from './modules/users/users.module';
+import databaseConfig from './config/database.config';
+import appConfig from './config/app.config';
+import jwtConfig from './config/jwt.config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env.local', '.env'],
+      validate: validateEnv,
+      load: [appConfig, databaseConfig, jwtConfig],
+    }),
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
@@ -50,11 +59,6 @@ import { UsersModule } from './modules/users/users.module';
           },
         },
       },
-    }),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: ['.env.local', '.env'],
-      validate: validateEnv,
     }),
     UsersModule,
     AuthModule,
