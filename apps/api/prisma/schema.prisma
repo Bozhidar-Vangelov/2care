@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  firstName String?  @map("first_name")
+  lastName  String?  @map("last_name")
+  role      Role     @default(PARENT)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  familyMembers FamilyMember[]
+  activities    Activity[]
+
+  @@map("users")
+}
+
+model Baby {
+  id          String   @id @default(uuid())
+  name        String
+  dateOfBirth DateTime @map("date_of_birth")
+  gender      Gender?
+  photoUrl    String?  @map("photo_url")
+  familyId    String   @map("family_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  family     Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  activities Activity[]
+
+  @@map("babies")
+}
+
+model Family {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  members FamilyMember[]
+  babies  Baby[]
+
+  @@map("families")
+}
+
+model FamilyMember {
+  id        String     @id @default(uuid())
+  userId    String     @map("user_id")
+  familyId  String     @map("family_id")
+  role      FamilyRole
+  createdAt DateTime   @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  family Family @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, familyId])
+  @@map("family_members")
+}
+
+model Activity {
+  id        String       @id @default(uuid())
+  type      ActivityType
+  babyId    String       @map("baby_id")
+  userId    String       @map("user_id")
+  timestamp DateTime     @default(now())
+  notes     String?
+  metadata  Json?
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  baby Baby @relation(fields: [babyId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("activities")
+}
+
+enum Role {
+  PARENT
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum FamilyRole {
+  PRIMARY_PARENT
+  CO_PARENT
+  CAREGIVER
+  VIEWER
+}
+
+enum ActivityType {
+  FEEDING
+  DIAPER_CHANGE
+  SLEEP
+  GROWTH
+  MEDICATION
+  MILESTONE
+  NOTE
+}
