@@ -26,11 +26,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message:
         typeof exceptionResponse === 'string'
           ? exceptionResponse
-          : (exceptionResponse as { message: string })?.message ||
+          : (exceptionResponse as { message?: string })?.message ||
             'Internal server error',
       error:
         typeof exceptionResponse === 'object' && 'error' in exceptionResponse
-          ? (exceptionResponse as { error: string })?.error
+          ? (exceptionResponse as { error?: string })?.error
           : exception.name,
     };
 
