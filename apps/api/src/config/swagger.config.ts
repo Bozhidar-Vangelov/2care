@@ -8,6 +8,7 @@ export function setupSwagger(app: INestApplication): void {
       'API documentation for 2Care co-parenting baby care application',
     )
     .setVersion('1.0')
+    .addTag('app', 'Application endpoints')
     .addTag('auth', 'Authentication endpoints')
     .addTag('users', 'User management')
     .addTag('babies', 'Baby profiles')

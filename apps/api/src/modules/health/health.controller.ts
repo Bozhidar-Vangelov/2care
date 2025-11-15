@@ -1,13 +1,13 @@
+import { PrismaService } from '@/core/infrastructure/database/prisma/prisma.service';
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
+  DiskHealthIndicator,
   HealthCheck,
   HealthCheckService,
-  PrismaHealthIndicator,
   MemoryHealthIndicator,
-  DiskHealthIndicator,
+  PrismaHealthIndicator,
 } from '@nestjs/terminus';
-import { PrismaService } from '@/core/infrastructure/database/prisma/prisma.service';
 
 @ApiTags('health')
 @Controller({ path: 'health', version: '1' })
