@@ -30,7 +30,7 @@ export class HealthController {
       () => this.memory.checkRSS('memory_rss', 150 * 1024 * 1024),
       () =>
         this.disk.checkStorage('storage', {
-          path: '/',
+          path: process.platform === 'win32' ? 'C:\\' : '/',
           thresholdPercent: 0.9,
         }),
     ]);

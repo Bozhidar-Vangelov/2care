@@ -35,15 +35,14 @@ async function bootstrap() {
     ],
   });
 
+  app.setGlobalPrefix('api');
+
   // API Versioning
   app.enableVersioning({
     type: VersioningType.URI,
     defaultVersion: '1',
-    prefix: 'api/v',
+    prefix: 'v',
   });
-
-  // Global prefix
-  app.setGlobalPrefix('api');
 
   // Global pipes
   app.useGlobalPipes(
@@ -57,7 +56,7 @@ async function bootstrap() {
     }),
   );
 
-  // Global filters (order matters!)
+  // Global filters
   app.useGlobalFilters(
     new AllExceptionsFilter(),
     new PrismaExceptionFilter(),
