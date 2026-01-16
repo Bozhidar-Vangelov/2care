@@ -13,8 +13,15 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { Public } from '../../common/decorators/public.decorator';
 import { JwtRefreshGuard } from '../../common/guards/jwt-refresh.guard';
+import {
+  RATE_LIMIT_LOGIN,
+  RATE_LIMIT_REFRESH,
+  RATE_LIMIT_REGISTER,
+  RATE_LIMIT_TTL,
+} from '../../common/constants/rate-limit.constants';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -26,6 +33,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @Throttle({ default: { limit: RATE_LIMIT_REGISTER, ttl: RATE_LIMIT_TTL } })
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: 'Register a new user' })
@@ -37,6 +45,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: RATE_LIMIT_LOGIN, ttl: RATE_LIMIT_TTL } })
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login user' })
@@ -48,6 +57,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle({ default: { limit: RATE_LIMIT_REFRESH, ttl: RATE_LIMIT_TTL } })
   @Post('refresh')
   @UseGuards(JwtRefreshGuard)
   @HttpCode(HttpStatus.OK)

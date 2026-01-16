@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import type { Request, Response } from 'express';
 import { LoggerModule } from 'nestjs-pino';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { validateEnv } from './config/validation.schema';
@@ -20,6 +21,10 @@ import jwtConfig from './config/jwt.config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
+import {
+  RATE_LIMIT_DEFAULT,
+  RATE_LIMIT_TTL,
+} from './common/constants/rate-limit.constants';
 
 @Module({
   imports: [
@@ -29,6 +34,12 @@ import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
       validate: validateEnv,
       load: [appConfig, databaseConfig, jwtConfig],
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: RATE_LIMIT_TTL,
+        limit: RATE_LIMIT_DEFAULT,
+      },
+    ]),
     LoggerModule.forRoot({
       pinoHttp: {
         level: process.env.NODE_ENV === 'production' ? 'info' : 'debug',
