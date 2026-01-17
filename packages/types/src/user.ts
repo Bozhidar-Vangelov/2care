@@ -5,8 +5,8 @@ export interface User {
   lastName: string | null;
   role: "PARENT" | "ADMIN";
   avatar: string | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface AuthTokens {
