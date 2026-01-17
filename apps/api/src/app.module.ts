@@ -18,6 +18,7 @@ import { UsersModule } from './modules/users/users.module';
 import databaseConfig from './config/database.config';
 import appConfig from './config/app.config';
 import jwtConfig from './config/jwt.config';
+import supabaseConfig from './config/supabase.config';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
 import { JwtStrategy } from './modules/auth/strategies/jwt.strategy';
@@ -32,7 +33,7 @@ import {
       isGlobal: true,
       envFilePath: ['.env.local', '.env'],
       validate: validateEnv,
-      load: [appConfig, databaseConfig, jwtConfig],
+      load: [appConfig, databaseConfig, jwtConfig, supabaseConfig],
     }),
     ThrottlerModule.forRoot([
       {
