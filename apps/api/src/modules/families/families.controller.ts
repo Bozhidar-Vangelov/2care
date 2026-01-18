@@ -1,3 +1,5 @@
+import { GetUser } from '@/common/decorators/get-user.decorator';
+import type { Family } from '@2care/types';
 import {
   Body,
   Controller,
@@ -7,38 +9,62 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateFamilyDto } from './dto/create-family.dto';
 import { UpdateFamilyDto } from './dto/update-family.dto';
 import { FamiliesService } from './families.service';
 
 @ApiTags('families')
-@Controller('families')
+@Controller({ path: 'families', version: '1' })
+@ApiBearerAuth()
 export class FamiliesController {
   constructor(private readonly familiesService: FamiliesService) {}
 
   @Post()
-  create(@Body() createFamilyDto: CreateFamilyDto) {
-    return this.familiesService.create(createFamilyDto);
+  @ApiCreatedResponse({ description: 'Family created successfully' })
+  createFamily(
+    @Body() createFamilyDto: CreateFamilyDto,
+    @GetUser() userId: string,
+  ): Promise<Family> {
+    return this.familiesService.createFamily(createFamilyDto, userId);
   }
 
   @Get()
-  findAll() {
-    return this.familiesService.findAll();
+  @ApiCreatedResponse({ description: 'Families retrieved successfully' })
+  getUserFamilies(@GetUser() userId: string): Promise<Family[]> {
+    return this.familiesService.getUserFamilies(userId);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.familiesService.findOne(+id);
+  @ApiOkResponse({ description: 'Family retrieved successfully' })
+  getFamilyById(
+    @Param('id') id: string,
+    @GetUser() userId: string,
+  ): Promise<Family> {
+    return this.familiesService.getFamilyById(id, userId);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateFamilyDto: UpdateFamilyDto) {
-    return this.familiesService.update(+id, updateFamilyDto);
+  @ApiOkResponse({ description: 'Family updated successfully' })
+  updateFamily(
+    @Param('id') id: string,
+    @Body() updateFamilyDto: UpdateFamilyDto,
+    @GetUser() userId: string,
+  ): Promise<Family> {
+    return this.familiesService.updateFamily(id, updateFamilyDto, userId);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.familiesService.remove(+id);
+  @ApiOkResponse({ description: 'Family deleted successfully' })
+  async softDeleteFamily(
+    @Param('id') id: string,
+    @GetUser() userId: string,
+  ): Promise<void> {
+    return this.familiesService.softDeleteFamily(id, userId);
   }
 }
