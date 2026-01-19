@@ -7,6 +7,7 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { CreateFamilyDto } from './dto/create-family.dto';
+import { CreateInviteDto } from './dto/create-invite.dto';
 import { UpdateFamilyDto } from './dto/update-family.dto';
 
 @Injectable()
@@ -167,5 +168,56 @@ export class FamiliesService {
       where: { id },
       data: { deletedAt: new Date() },
     });
+  }
+
+  async generateInviteLink(
+    familyId: string,
+    createInviteDto: CreateInviteDto,
+    userId: string,
+  ): Promise<{ inviteLink: string; token: string; expiresAt: Date }> {
+    const family = await this.prisma.family.findUnique({
+      where: { id: familyId },
+      include: { members: true },
+    });
+
+    if (!family || family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const member = family.members.find((m) => m.userId === userId);
+    if (!member) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    if (
+      member.role !== FamilyRole.PRIMARY_PARENT &&
+      member.role !== FamilyRole.CO_PARENT
+    ) {
+      throw new ForbiddenException(
+        'Only PRIMARY_PARENT or CO_PARENT can create invites',
+      );
+    }
+
+    const expiresInHours = createInviteDto.expiresInHours || 168;
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + expiresInHours);
+
+    const invite = await this.prisma.familyInvite.create({
+      data: {
+        familyId,
+        role: createInviteDto.role || FamilyRole.VIEWER,
+        expiresAt,
+        createdBy: userId,
+      },
+    });
+
+    //TODO: Replace with frontend URL from config
+    const inviteLink = `http://localhost:3000/families/join/${invite.token}`;
+
+    return {
+      inviteLink,
+      token: invite.token,
+      expiresAt: invite.expiresAt,
+    };
   }
 }

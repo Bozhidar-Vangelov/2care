@@ -16,6 +16,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateFamilyDto } from './dto/create-family.dto';
+import { CreateInviteDto } from './dto/create-invite.dto';
 import { UpdateFamilyDto } from './dto/update-family.dto';
 import { FamiliesService } from './families.service';
 
@@ -66,5 +67,28 @@ export class FamiliesController {
     @GetUser() userId: string,
   ): Promise<void> {
     return this.familiesService.softDeleteFamily(id, userId);
+  }
+
+  @Post(':id/invite')
+  @ApiCreatedResponse({
+    description: 'Family invite link generated successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        inviteLink: {
+          type: 'string',
+          example: 'http://localhost:3000/families/join/abc-123',
+        },
+        token: { type: 'string', example: 'abc-123' },
+        expiresAt: { type: 'string', format: 'date-time' },
+      },
+    },
+  })
+  createInvite(
+    @Param('id') id: string,
+    @Body() createInviteDto: CreateInviteDto,
+    @GetUser() userId: string,
+  ): Promise<{ inviteLink: string; token: string; expiresAt: Date }> {
+    return this.familiesService.generateInviteLink(id, createInviteDto, userId);
   }
 }
