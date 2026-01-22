@@ -19,6 +19,7 @@ import { CreateFamilyDto } from './dto/create-family.dto';
 import { CreateInviteDto } from './dto/create-invite.dto';
 import { JoinFamilyDto } from './dto/join-family.dto';
 import { UpdateFamilyDto } from './dto/update-family.dto';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { FamiliesService } from './families.service';
 
 @ApiTags('families')
@@ -55,6 +56,22 @@ export class FamiliesController {
   @ApiOkResponse({ description: 'Family members retrieved successfully' })
   getFamilyMembers(@Param('id') id: string, @GetUser() userId: string) {
     return this.familiesService.getFamilyMembers(id, userId);
+  }
+
+  @Patch(':id/members/:memberId')
+  @ApiOkResponse({ description: 'Member role updated successfully' })
+  updateMemberRole(
+    @Param('id') id: string,
+    @Param('memberId') memberId: string,
+    @Body() updateMemberRoleDto: UpdateMemberRoleDto,
+    @GetUser() userId: string,
+  ) {
+    return this.familiesService.updateMemberRole(
+      id,
+      memberId,
+      updateMemberRoleDto,
+      userId,
+    );
   }
 
   @Patch(':id')

@@ -12,6 +12,7 @@ import { CreateFamilyDto } from './dto/create-family.dto';
 import { CreateInviteDto } from './dto/create-invite.dto';
 import { JoinFamilyDto } from './dto/join-family.dto';
 import { UpdateFamilyDto } from './dto/update-family.dto';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 
 @Injectable()
 export class FamiliesService {
@@ -329,5 +330,72 @@ export class FamiliesService {
     }
 
     return family.members;
+  }
+
+  async updateMemberRole(
+    familyId: string,
+    memberId: string,
+    updateMemberRoleDto: UpdateMemberRoleDto,
+    userId: string,
+  ) {
+    const family = await this.prisma.family.findUnique({
+      where: { id: familyId },
+      include: { members: true },
+    });
+
+    if (!family || family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const currentUserMember = family.members.find((m) => m.userId === userId);
+    if (!currentUserMember) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    if (
+      currentUserMember.role !== FamilyRole.PRIMARY_PARENT &&
+      currentUserMember.role !== FamilyRole.CO_PARENT
+    ) {
+      throw new ForbiddenException(
+        'Only PRIMARY_PARENT or CO_PARENT can update member roles',
+      );
+    }
+
+    const memberToUpdate = family.members.find((m) => m.id === memberId);
+    if (!memberToUpdate) {
+      throw new NotFoundException('Member not found in this family');
+    }
+
+    // Prevent changing own role if PRIMARY_PARENT
+    if (
+      memberToUpdate.userId === userId &&
+      currentUserMember.role === FamilyRole.PRIMARY_PARENT
+    ) {
+      throw new ForbiddenException(
+        'PRIMARY_PARENT cannot change their own role',
+      );
+    }
+
+    // Prevent changing PRIMARY_PARENT role unless you are PRIMARY_PARENT
+    if (
+      memberToUpdate.role === FamilyRole.PRIMARY_PARENT &&
+      currentUserMember.role !== FamilyRole.PRIMARY_PARENT
+    ) {
+      throw new ForbiddenException(
+        'Only PRIMARY_PARENT can change the PRIMARY_PARENT role',
+      );
+    }
+
+    const updatedMember = await this.prisma.familyMember.update({
+      where: { id: memberId },
+      data: { role: updateMemberRoleDto.role },
+      include: {
+        user: {
+          omit: { password: true },
+        },
+      },
+    });
+
+    return updatedMember;
   }
 }
