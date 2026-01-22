@@ -62,6 +62,7 @@ model Family {
   updatedAt DateTime       @updatedAt @map("updated_at")
   babies    Baby[]
   members   FamilyMember[]
+  invites   FamilyInvite[]
 
   @@map("families")
 }
@@ -77,6 +78,23 @@ model FamilyMember {
 
   @@unique([userId, familyId])
   @@map("family_members")
+}
+
+model FamilyInvite {
+  id        String     @id @default(uuid())
+  familyId  String     @map("family_id")
+  token     String     @unique @default(uuid())
+  role      FamilyRole @default(VIEWER)
+  expiresAt DateTime   @map("expires_at")
+  usedAt    DateTime?  @map("used_at")
+  usedBy    String?    @map("used_by")
+  createdBy String     @map("created_by")
+  createdAt DateTime   @default(now()) @map("created_at")
+  family    Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([familyId])
+  @@map("family_invites")
 }
 
 model Activity {

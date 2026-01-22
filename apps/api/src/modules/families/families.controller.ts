@@ -16,7 +16,10 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateFamilyDto } from './dto/create-family.dto';
+import { CreateInviteDto } from './dto/create-invite.dto';
+import { JoinFamilyDto } from './dto/join-family.dto';
 import { UpdateFamilyDto } from './dto/update-family.dto';
+import { UpdateMemberRoleDto } from './dto/update-member-role.dto';
 import { FamiliesService } from './families.service';
 
 @ApiTags('families')
@@ -49,6 +52,38 @@ export class FamiliesController {
     return this.familiesService.getFamilyById(id, userId);
   }
 
+  @Get(':id/members')
+  @ApiOkResponse({ description: 'Family members retrieved successfully' })
+  getFamilyMembers(@Param('id') id: string, @GetUser() userId: string) {
+    return this.familiesService.getFamilyMembers(id, userId);
+  }
+
+  @Patch(':id/members/:memberId')
+  @ApiOkResponse({ description: 'Member role updated successfully' })
+  updateMemberRole(
+    @Param('id') id: string,
+    @Param('memberId') memberId: string,
+    @Body() updateMemberRoleDto: UpdateMemberRoleDto,
+    @GetUser() userId: string,
+  ) {
+    return this.familiesService.updateMemberRole(
+      id,
+      memberId,
+      updateMemberRoleDto,
+      userId,
+    );
+  }
+
+  @Delete(':id/members/:memberId')
+  @ApiOkResponse({ description: 'Member removed successfully' })
+  async removeMember(
+    @Param('id') id: string,
+    @Param('memberId') memberId: string,
+    @GetUser() userId: string,
+  ): Promise<void> {
+    return this.familiesService.removeMember(id, memberId, userId);
+  }
+
   @Patch(':id')
   @ApiOkResponse({ description: 'Family updated successfully' })
   updateFamily(
@@ -66,5 +101,37 @@ export class FamiliesController {
     @GetUser() userId: string,
   ): Promise<void> {
     return this.familiesService.softDeleteFamily(id, userId);
+  }
+
+  @Post(':id/invite')
+  @ApiCreatedResponse({
+    description: 'Family invite link generated successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        inviteLink: {
+          type: 'string',
+          example: 'http://localhost:3000/families/join/abc-123',
+        },
+        token: { type: 'string', example: 'abc-123' },
+        expiresAt: { type: 'string', format: 'date-time' },
+      },
+    },
+  })
+  createInvite(
+    @Param('id') id: string,
+    @Body() createInviteDto: CreateInviteDto,
+    @GetUser() userId: string,
+  ): Promise<{ inviteLink: string; token: string; expiresAt: Date }> {
+    return this.familiesService.generateInviteLink(id, createInviteDto, userId);
+  }
+
+  @Post('join')
+  @ApiCreatedResponse({ description: 'Successfully joined family' })
+  joinFamily(
+    @Body() joinFamilyDto: JoinFamilyDto,
+    @GetUser() userId: string,
+  ): Promise<Family> {
+    return this.familiesService.joinFamily(joinFamilyDto, userId);
   }
 }
