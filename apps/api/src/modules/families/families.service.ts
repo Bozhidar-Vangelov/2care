@@ -398,4 +398,71 @@ export class FamiliesService {
 
     return updatedMember;
   }
+
+  async removeMember(
+    familyId: string,
+    memberId: string,
+    userId: string,
+  ): Promise<void> {
+    const family = await this.prisma.family.findUnique({
+      where: { id: familyId },
+      include: { members: true },
+    });
+
+    if (!family || family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const currentUserMember = family.members.find((m) => m.userId === userId);
+    if (!currentUserMember) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    const memberToRemove = family.members.find((m) => m.id === memberId);
+    if (!memberToRemove) {
+      throw new NotFoundException('Member not found in this family');
+    }
+
+    // Members can remove themselves (leave family)
+    const isSelfRemoval = memberToRemove.userId === userId;
+
+    // If not self-removal, check permissions
+    if (!isSelfRemoval) {
+      if (
+        currentUserMember.role !== FamilyRole.PRIMARY_PARENT &&
+        currentUserMember.role !== FamilyRole.CO_PARENT
+      ) {
+        throw new ForbiddenException(
+          'Only PRIMARY_PARENT or CO_PARENT can remove other members',
+        );
+      }
+
+      // Prevent removing PRIMARY_PARENT unless you are PRIMARY_PARENT
+      if (
+        memberToRemove.role === FamilyRole.PRIMARY_PARENT &&
+        currentUserMember.role !== FamilyRole.PRIMARY_PARENT
+      ) {
+        throw new ForbiddenException(
+          'Only PRIMARY_PARENT can remove another PRIMARY_PARENT',
+        );
+      }
+    }
+
+    // Prevent removing the last PRIMARY_PARENT
+    if (memberToRemove.role === FamilyRole.PRIMARY_PARENT) {
+      const primaryParentsCount = family.members.filter(
+        (m) => m.role === FamilyRole.PRIMARY_PARENT,
+      ).length;
+
+      if (primaryParentsCount <= 1) {
+        throw new BadRequestException(
+          'Cannot remove the last PRIMARY_PARENT from the family',
+        );
+      }
+    }
+
+    await this.prisma.familyMember.delete({
+      where: { id: memberId },
+    });
+  }
 }

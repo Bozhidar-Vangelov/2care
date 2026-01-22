@@ -74,6 +74,16 @@ export class FamiliesController {
     );
   }
 
+  @Delete(':id/members/:memberId')
+  @ApiOkResponse({ description: 'Member removed successfully' })
+  async removeMember(
+    @Param('id') id: string,
+    @Param('memberId') memberId: string,
+    @GetUser() userId: string,
+  ): Promise<void> {
+    return this.familiesService.removeMember(id, memberId, userId);
+  }
+
   @Patch(':id')
   @ApiOkResponse({ description: 'Family updated successfully' })
   updateFamily(
