@@ -5,9 +5,12 @@ import {
   Injectable,
   NotFoundException,
   ForbiddenException,
+  BadRequestException,
+  ConflictException,
 } from '@nestjs/common';
 import { CreateFamilyDto } from './dto/create-family.dto';
 import { CreateInviteDto } from './dto/create-invite.dto';
+import { JoinFamilyDto } from './dto/join-family.dto';
 import { UpdateFamilyDto } from './dto/update-family.dto';
 
 @Injectable()
@@ -219,5 +222,86 @@ export class FamiliesService {
       token: invite.token,
       expiresAt: invite.expiresAt,
     };
+  }
+
+  async joinFamily(
+    joinFamilyDto: JoinFamilyDto,
+    userId: string,
+  ): Promise<Family> {
+    const { token } = joinFamilyDto;
+
+    const invite = await this.prisma.familyInvite.findUnique({
+      where: { token },
+      include: {
+        family: {
+          include: {
+            members: {
+              include: {
+                user: {
+                  omit: { password: true },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!invite) {
+      throw new NotFoundException('Invalid invite token');
+    }
+
+    if (invite.usedAt) {
+      throw new BadRequestException('This invite has already been used');
+    }
+
+    if (invite.expiresAt < new Date()) {
+      throw new BadRequestException('This invite has expired');
+    }
+
+    if (!invite.family || invite.family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const isAlreadyMember = invite.family.members.some(
+      (member) => member.userId === userId,
+    );
+    if (isAlreadyMember) {
+      throw new ConflictException('You are already a member of this family');
+    }
+
+    // Add user to family and mark invite as used
+    const [familyMember] = await this.prisma.$transaction([
+      this.prisma.familyMember.create({
+        data: {
+          userId,
+          familyId: invite.familyId,
+          role: invite.role,
+        },
+        include: {
+          family: {
+            include: {
+              members: {
+                include: {
+                  user: {
+                    omit: { password: true },
+                  },
+                },
+              },
+              babies: true,
+            },
+          },
+        },
+      }),
+      this.prisma.familyInvite.update({
+        where: { id: invite.id },
+        data: {
+          usedAt: new Date(),
+          usedBy: userId,
+        },
+      }),
+    ]);
+
+    return familyMember.family;
   }
 }
