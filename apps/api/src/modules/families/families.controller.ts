@@ -51,6 +51,12 @@ export class FamiliesController {
     return this.familiesService.getFamilyById(id, userId);
   }
 
+  @Get(':id/members')
+  @ApiOkResponse({ description: 'Family members retrieved successfully' })
+  getFamilyMembers(@Param('id') id: string, @GetUser() userId: string) {
+    return this.familiesService.getFamilyMembers(id, userId);
+  }
+
   @Patch(':id')
   @ApiOkResponse({ description: 'Family updated successfully' })
   updateFamily(

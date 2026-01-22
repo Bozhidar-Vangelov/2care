@@ -304,4 +304,30 @@ export class FamiliesService {
 
     return familyMember.family;
   }
+
+  async getFamilyMembers(familyId: string, userId: string) {
+    const family = await this.prisma.family.findUnique({
+      where: { id: familyId },
+      include: {
+        members: {
+          include: {
+            user: {
+              omit: { password: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!family || family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const isMember = family.members.some((member) => member.userId === userId);
+    if (!isMember) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    return family.members;
+  }
 }
