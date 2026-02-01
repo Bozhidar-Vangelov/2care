@@ -1,6 +1,6 @@
 import { PrismaService } from '@/core/infrastructure/database/prisma/prisma.service';
 import { FamilyRole } from '@/generated/prisma/client';
-import type { Family } from '@2care/types';
+import type { Family, Baby } from '@2care/types';
 import {
   Injectable,
   NotFoundException,
@@ -464,5 +464,38 @@ export class FamiliesService {
     await this.prisma.familyMember.delete({
       where: { id: memberId },
     });
+  }
+
+  async getFamilyBabies(familyId: string, userId: string): Promise<Baby[]> {
+    // Verify user is a member of the family
+    const familyMember = await this.prisma.familyMember.findFirst({
+      where: {
+        familyId,
+        userId,
+      },
+      include: {
+        family: true,
+      },
+    });
+
+    if (!familyMember) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    if (familyMember.family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const babies = await this.prisma.baby.findMany({
+      where: {
+        familyId,
+        deletedAt: null,
+      },
+      orderBy: {
+        dateOfBirth: 'desc',
+      },
+    });
+
+    return babies;
   }
 }

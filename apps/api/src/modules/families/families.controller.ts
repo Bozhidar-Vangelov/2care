@@ -1,5 +1,5 @@
 import { GetUser } from '@/common/decorators/get-user.decorator';
-import type { Family } from '@2care/types';
+import type { Family, Baby } from '@2care/types';
 import {
   Body,
   Controller,
@@ -50,6 +50,15 @@ export class FamiliesController {
     @GetUser() userId: string,
   ): Promise<Family> {
     return this.familiesService.getFamilyById(id, userId);
+  }
+
+  @Get(':id/babies')
+  @ApiOkResponse({ description: 'Family babies retrieved successfully' })
+  getFamilyBabies(
+    @Param('id') id: string,
+    @GetUser() userId: string,
+  ): Promise<Baby[]> {
+    return this.familiesService.getFamilyBabies(id, userId);
   }
 
   @Get(':id/members')
