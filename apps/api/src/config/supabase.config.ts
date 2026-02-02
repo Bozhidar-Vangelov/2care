@@ -6,6 +6,7 @@ export default registerAs('supabase', () => ({
   serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   storage: {
     avatarsBucket: 'avatars',
+    babyPhotosBucket: 'baby-photos',
     maxFileSize: 1024 * 1024, // 1MB
     allowedMimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif'],
   },

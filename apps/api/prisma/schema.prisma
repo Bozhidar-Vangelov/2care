@@ -40,19 +40,31 @@ model RefreshToken {
 }
 
 model Baby {
-  id          String     @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String
-  dateOfBirth DateTime   @map("date_of_birth")
+  dateOfBirth DateTime    @map("date_of_birth")
   gender      Gender?
-  photoUrl    String?    @map("photo_url")
-  familyId    String     @map("family_id")
-  deletedAt   DateTime?  @map("deleted_at")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
+  photoUrl    String?     @map("photo_url")
+  familyId    String      @map("family_id")
+  deletedAt   DateTime?   @map("deleted_at")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
   activities  Activity[]
-  family      Family     @relation(fields: [familyId], references: [id], onDelete: Cascade)
+  photos      BabyPhoto[]
+  family      Family      @relation(fields: [familyId], references: [id], onDelete: Cascade)
 
   @@map("babies")
+}
+
+model BabyPhoto {
+  id        String   @id @default(uuid())
+  babyId    String   @map("baby_id")
+  photoUrl  String   @map("photo_url")
+  createdAt DateTime @default(now()) @map("created_at")
+  baby      Baby     @relation(fields: [babyId], references: [id], onDelete: Cascade)
+
+  @@index([babyId])
+  @@map("baby_photos")
 }
 
 model Family {
