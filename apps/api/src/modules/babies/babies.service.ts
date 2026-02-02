@@ -1,4 +1,5 @@
 import { PrismaService } from '@/core/infrastructure/database/prisma/prisma.service';
+import { SupabaseService } from '@/core/infrastructure/storage/supabase/supabase.service';
 import { FamilyRole } from '@/generated/prisma/client';
 import type { Baby } from '@2care/types';
 import {
@@ -11,7 +12,10 @@ import { UpdateBabyDto } from './dto/update-baby.dto';
 
 @Injectable()
 export class BabiesService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private supabaseService: SupabaseService,
+  ) {}
 
   async createBaby(
     createBabyDto: CreateBabyDto,
@@ -208,5 +212,96 @@ export class BabiesService {
       where: { id },
       data: { deletedAt: new Date() },
     });
+  }
+
+  async uploadBabyPhoto(
+    babyId: string,
+    file: Express.Multer.File,
+    userId: string,
+  ): Promise<{ id: string; photoUrl: string; createdAt: Date }> {
+    // Verify baby exists and user has access
+    const baby = await this.prisma.baby.findUnique({
+      where: { id: babyId },
+      include: {
+        family: {
+          include: {
+            members: true,
+          },
+        },
+      },
+    });
+
+    if (!baby || baby.deletedAt) {
+      throw new NotFoundException('Baby not found');
+    }
+
+    if (baby.family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const member = baby.family.members.find((m) => m.userId === userId);
+    if (!member) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    // Upload photo to Supabase
+    const photoUrl = await this.supabaseService.uploadBabyPhoto(babyId, file);
+
+    // Save photo reference to database
+    const babyPhoto = await this.prisma.babyPhoto.create({
+      data: {
+        babyId,
+        photoUrl,
+      },
+    });
+
+    return babyPhoto;
+  }
+
+  async getBabyPhotos(
+    babyId: string,
+    userId: string,
+  ): Promise<Array<{ id: string; photoUrl: string; createdAt: Date }>> {
+    // Verify baby exists and user has access
+    const baby = await this.prisma.baby.findUnique({
+      where: { id: babyId },
+      include: {
+        family: {
+          include: {
+            members: true,
+          },
+        },
+      },
+    });
+
+    if (!baby || baby.deletedAt) {
+      throw new NotFoundException('Baby not found');
+    }
+
+    if (baby.family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const member = baby.family.members.find((m) => m.userId === userId);
+    if (!member) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    // Get all photos for this baby
+    const photos = await this.prisma.babyPhoto.findMany({
+      where: {
+        babyId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      select: {
+        id: true,
+        photoUrl: true,
+        createdAt: true,
+      },
+    });
+
+    return photos;
   }
 }
