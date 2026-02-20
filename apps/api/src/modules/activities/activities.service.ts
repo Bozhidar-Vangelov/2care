@@ -61,6 +61,42 @@ export class ActivitiesService {
     return activity as Activity;
   }
 
+  async getActivityById(id: string, userId: string): Promise<Activity> {
+    const activity = await this.prisma.activity.findUnique({
+      where: { id },
+      include: {
+        baby: {
+          include: {
+            family: {
+              include: { members: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!activity) {
+      throw new NotFoundException('Activity not found');
+    }
+
+    if (activity.baby.deletedAt) {
+      throw new NotFoundException('Baby not found');
+    }
+
+    if (activity.baby.family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const member = activity.baby.family.members.find(
+      (m) => m.userId === userId,
+    );
+    if (!member) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    return activity as Activity;
+  }
+
   async listActivities(
     query: ListActivitiesDto,
     userId: string,

@@ -1,6 +1,6 @@
 import { GetUser } from '@/common/decorators/get-user.decorator';
 import type { Activity, PaginatedResponse } from '@2care/types';
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -24,6 +24,15 @@ export class ActivitiesController {
     @GetUser() userId: string,
   ): Promise<Activity> {
     return this.activitiesService.createActivity(createActivityDto, userId);
+  }
+
+  @Get(':id')
+  @ApiOkResponse({ description: 'Activity retrieved successfully' })
+  getActivityById(
+    @Param('id') id: string,
+    @GetUser() userId: string,
+  ): Promise<Activity> {
+    return this.activitiesService.getActivityById(id, userId);
   }
 
   @Get()
