@@ -146,6 +146,54 @@ export class ActivitiesService {
     return updated as Activity;
   }
 
+  async deleteActivity(id: string, userId: string): Promise<void> {
+    const activity = await this.prisma.activity.findUnique({
+      where: { id },
+      include: {
+        baby: {
+          include: {
+            family: {
+              include: { members: true },
+            },
+          },
+        },
+      },
+    });
+
+    if (!activity || activity.deletedAt) {
+      throw new NotFoundException('Activity not found');
+    }
+
+    if (activity.baby.deletedAt) {
+      throw new NotFoundException('Baby not found');
+    }
+
+    if (activity.baby.family.deletedAt) {
+      throw new NotFoundException('Family not found');
+    }
+
+    const member = activity.baby.family.members.find(
+      (m) => m.userId === userId,
+    );
+    if (!member) {
+      throw new ForbiddenException('You are not a member of this family');
+    }
+
+    const isCreator = activity.userId === userId;
+    const canDelete = isCreator || member.role === FamilyRole.PRIMARY_PARENT;
+
+    if (!canDelete) {
+      throw new ForbiddenException(
+        'Only the activity creator or PRIMARY_PARENT can delete activities',
+      );
+    }
+
+    await this.prisma.activity.update({
+      where: { id },
+      data: { deletedAt: new Date() },
+    });
+  }
+
   async getActivityById(id: string, userId: string): Promise<Activity> {
     const activity = await this.prisma.activity.findUnique({
       where: { id },
@@ -160,7 +208,7 @@ export class ActivitiesService {
       },
     });
 
-    if (!activity) {
+    if (!activity || activity.deletedAt) {
       throw new NotFoundException('Activity not found');
     }
 
@@ -212,6 +260,7 @@ export class ActivitiesService {
 
     const where = {
       babyId,
+      deletedAt: null,
       ...(type ? { type } : {}),
       ...(from || to
         ? {

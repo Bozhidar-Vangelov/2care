@@ -3,7 +3,10 @@ import type { Activity, PaginatedResponse } from '@2care/types';
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Patch,
   Post,
@@ -11,6 +14,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  ApiNoContentResponse,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiTags,
@@ -33,6 +37,16 @@ export class ActivitiesController {
     @GetUser() userId: string,
   ): Promise<Activity> {
     return this.activitiesService.createActivity(createActivityDto, userId);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiNoContentResponse({ description: 'Activity deleted successfully' })
+  deleteActivity(
+    @Param('id') id: string,
+    @GetUser() userId: string,
+  ): Promise<void> {
+    return this.activitiesService.deleteActivity(id, userId);
   }
 
   @Patch(':id')

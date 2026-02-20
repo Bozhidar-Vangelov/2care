@@ -119,6 +119,7 @@ model Activity {
   notes     String?
   metadata  Json?
   createdAt DateTime     @default(now()) @map("created_at")
+  deletedAt DateTime?    @map("deleted_at")
   baby      Baby         @relation(fields: [babyId], references: [id], onDelete: Cascade)
   user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
