@@ -15,10 +15,10 @@ export interface Activity {
   type: ActivityType;
   babyId: string;
   userId: string;
-  timestamp: string;
+  timestamp: Date;
   notes: string | null;
   metadata: Record<string, unknown> | null;
-  createdAt: string;
+  createdAt: Date;
   baby?: Baby;
   user?: User;
 }

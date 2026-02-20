@@ -1,47 +1,37 @@
+import { GetUser } from '@/common/decorators/get-user.decorator';
+import type { Activity, PaginatedResponse } from '@2care/types';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Patch,
-  Post,
-} from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
-import { UpdateActivityDto } from './dto/update-activity.dto';
+import { ListActivitiesDto } from './dto/list-activities.dto';
 
 @ApiTags('activities')
-@Controller('activities')
+@Controller({ path: 'activities', version: '1' })
+@ApiBearerAuth()
 export class ActivitiesController {
   constructor(private readonly activitiesService: ActivitiesService) {}
 
   @Post()
-  create(@Body() createActivityDto: CreateActivityDto) {
-    return this.activitiesService.create(createActivityDto);
+  @ApiCreatedResponse({ description: 'Activity created successfully' })
+  createActivity(
+    @Body() createActivityDto: CreateActivityDto,
+    @GetUser() userId: string,
+  ): Promise<Activity> {
+    return this.activitiesService.createActivity(createActivityDto, userId);
   }
 
   @Get()
-  findAll() {
-    return this.activitiesService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.activitiesService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateActivityDto: UpdateActivityDto,
-  ) {
-    return this.activitiesService.update(+id, updateActivityDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.activitiesService.remove(+id);
+  @ApiOkResponse({ description: 'Activities retrieved successfully' })
+  listActivities(
+    @Query() query: ListActivitiesDto,
+    @GetUser() userId: string,
+  ): Promise<PaginatedResponse<Activity>> {
+    return this.activitiesService.listActivities(query, userId);
   }
 }
