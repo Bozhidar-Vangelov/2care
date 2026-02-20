@@ -1,6 +1,14 @@
 import { GetUser } from '@/common/decorators/get-user.decorator';
 import type { Activity, PaginatedResponse } from '@2care/types';
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
@@ -10,6 +18,7 @@ import {
 import { ActivitiesService } from './activities.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { ListActivitiesDto } from './dto/list-activities.dto';
+import { UpdateActivityDto } from './dto/update-activity.dto';
 
 @ApiTags('activities')
 @Controller({ path: 'activities', version: '1' })
@@ -24,6 +33,16 @@ export class ActivitiesController {
     @GetUser() userId: string,
   ): Promise<Activity> {
     return this.activitiesService.createActivity(createActivityDto, userId);
+  }
+
+  @Patch(':id')
+  @ApiOkResponse({ description: 'Activity updated successfully' })
+  updateActivity(
+    @Param('id') id: string,
+    @Body() updateActivityDto: UpdateActivityDto,
+    @GetUser() userId: string,
+  ): Promise<Activity> {
+    return this.activitiesService.updateActivity(id, updateActivityDto, userId);
   }
 
   @Get(':id')
