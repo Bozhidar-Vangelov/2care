@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 
 export const metadata = createMetadata({
   title: "Sign In",
-  description: "Sign in to your 2Care account to track your baby's daily activities and milestones.",
+  description:
+    "Sign in to your 2Care account to track your baby's daily activities and milestones.",
   path: "/login",
 });
 
