@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+import { createMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = { title: "Activities" };
+export const metadata = createMetadata({ title: "Activities", path: "/activities", noIndex: true });
 
 export default function ActivitiesPage() {
   return (

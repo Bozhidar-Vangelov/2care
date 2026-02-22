@@ -1,7 +1,11 @@
-import type { Metadata } from "next";
+import { createMetadata } from "@/lib/metadata";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export const metadata: Metadata = { title: "Sign in" };
+export const metadata = createMetadata({
+  title: "Sign In",
+  description: "Sign in to your 2Care account to track your baby's daily activities and milestones.",
+  path: "/login",
+});
 
 export default function LoginPage() {
   return (
