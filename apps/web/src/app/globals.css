@@ -1,26 +1,173 @@
 @import "tailwindcss";
 
+/* ─── Design tokens ───────────────────────────────────────────────────────── */
+/* All colors are defined as CSS variables.
+   Tailwind utilities (bg-primary, text-foreground, etc.) are mapped to them
+   via @theme below — change the value once, everything updates.             */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Base */
+  --background: hsl(0 0% 100%);
+  --foreground: hsl(222 47% 11%);
+
+  /* Surface */
+  --card: hsl(0 0% 100%);
+  --card-foreground: hsl(222 47% 11%);
+  --popover: hsl(0 0% 100%);
+  --popover-foreground: hsl(222 47% 11%);
+
+  /* Brand — soft sky-blue, nurturing feel */
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(0 0% 100%);
+
+  /* Secondary / quiet surfaces */
+  --secondary: hsl(210 40% 96%);
+  --secondary-foreground: hsl(222 47% 11%);
+
+  /* Muted text / disabled states */
+  --muted: hsl(210 40% 96%);
+  --muted-foreground: hsl(215 16% 47%);
+
+  /* Accent — fresh green for milestones & success */
+  --accent: hsl(142 76% 36%);
+  --accent-foreground: hsl(0 0% 100%);
+
+  /* Destructive */
+  --destructive: hsl(0 72% 51%);
+  --destructive-foreground: hsl(0 0% 100%);
+
+  /* Chrome */
+  --border: hsl(214 32% 91%);
+  --input: hsl(214 32% 91%);
+  --ring: hsl(217 91% 60%);
+
+  /* Border radius base (shadcn uses this) */
+  --radius: 0.5rem;
+
+  /* Sidebar */
+  --sidebar-background: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5% 26%);
+  --sidebar-primary: hsl(217 91% 60%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 5% 96%);
+  --sidebar-accent-foreground: hsl(240 6% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217 91% 60%);
 }
+
+/* ─── Dark theme (toggled via .dark class, controlled by next-themes) ─────── */
+.dark {
+  /* Base */
+  --background: hsl(222 47% 8%);
+  --foreground: hsl(210 40% 98%);
+
+  /* Surface */
+  --card: hsl(222 47% 11%);
+  --card-foreground: hsl(210 40% 98%);
+  --popover: hsl(222 47% 8%);
+  --popover-foreground: hsl(210 40% 98%);
+
+  /* Brand */
+  --primary: hsl(217 91% 60%);
+  --primary-foreground: hsl(222 47% 8%);
+
+  /* Secondary */
+  --secondary: hsl(217 32% 17%);
+  --secondary-foreground: hsl(210 40% 98%);
+
+  /* Muted */
+  --muted: hsl(217 32% 17%);
+  --muted-foreground: hsl(215 20% 65%);
+
+  /* Accent */
+  --accent: hsl(142 69% 48%);
+  --accent-foreground: hsl(222 47% 8%);
+
+  /* Destructive */
+  --destructive: hsl(0 63% 40%);
+  --destructive-foreground: hsl(210 40% 98%);
+
+  /* Chrome */
+  --border: hsl(217 32% 17%);
+  --input: hsl(217 32% 17%);
+  --ring: hsl(217 91% 60%);
+
+  /* Sidebar */
+  --sidebar-background: hsl(222 47% 11%);
+  --sidebar-foreground: hsl(240 5% 84%);
+  --sidebar-primary: hsl(217 91% 60%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 4% 16%);
+  --sidebar-accent-foreground: hsl(240 5% 84%);
+  --sidebar-border: hsl(240 4% 16%);
+  --sidebar-ring: hsl(217 91% 60%);
+}
+
+/* ─── Tailwind v4 theme mapping ───────────────────────────────────────────── */
+/* Maps Tailwind utility class names to the CSS variables above.
+   bg-primary, text-muted-foreground, border-border, etc. all work.         */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Typography */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Colors */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sidebar-background: var(--sidebar-background);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Border radius scale derived from --radius */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ─── Base styles ─────────────────────────────────────────────────────────── */
+@layer base {
+  * {
+    @apply border-border;
   }
-}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
 }
