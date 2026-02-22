@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 /* ─── Design tokens ───────────────────────────────────────────────────────── */
 /* All colors are defined as CSS variables.
    Tailwind utilities (bg-primary, text-foreground, etc.) are mapped to them
@@ -53,6 +55,7 @@
   --sidebar-accent-foreground: hsl(240 6% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: hsl(217 91% 60%);
+  --sidebar: hsl(0 0% 98%);
 }
 
 /* ─── Dark theme (toggled via .dark class, controlled by next-themes) ─────── */
@@ -101,6 +104,7 @@
   --sidebar-accent-foreground: hsl(240 5% 84%);
   --sidebar-border: hsl(240 4% 16%);
   --sidebar-ring: hsl(217 91% 60%);
+  --sidebar: hsl(240 5.9% 10%);
 }
 
 /* ─── Tailwind v4 theme mapping ───────────────────────────────────────────── */
@@ -156,6 +160,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
   --radius-2xl: calc(var(--radius) + 8px);
+  --color-sidebar: var(--sidebar);
 }
 
 /* ─── Base styles ─────────────────────────────────────────────────────────── */
