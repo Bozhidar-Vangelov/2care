@@ -9,12 +9,22 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
+import { useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false,
+  );
 
   const icon =
-    theme === "light" ? (
+    !mounted || theme === undefined ? (
+      <Monitor className="size-4" aria-hidden />
+    ) : theme === "light" ? (
       <Sun className="size-4" aria-hidden />
     ) : theme === "dark" ? (
       <Moon className="size-4" aria-hidden />
