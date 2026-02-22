@@ -6,6 +6,7 @@ import { LayoutDashboard, Baby, Activity, Users, Settings } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -14,6 +15,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { NAV_ITEMS, type NavHref } from "./nav-items";
 
 const ICON_MAP = {
@@ -58,6 +60,13 @@ export function SidebarNav() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter>
+        <div className="flex items-center justify-between px-2 py-1">
+          <span className="text-xs text-sidebar-foreground/60">Theme</span>
+          <ThemeToggle />
+        </div>
+      </SidebarFooter>
 
       <SidebarRail />
     </Sidebar>

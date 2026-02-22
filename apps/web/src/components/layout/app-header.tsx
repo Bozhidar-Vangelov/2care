@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { NAV_ITEMS } from "./nav-items";
 
 function usePageTitle(): string {
@@ -17,6 +18,7 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur supports-backdrop-filter:bg-background/60 md:hidden">
       <h1 className="flex-1 text-base font-semibold">{title}</h1>
+      <ThemeToggle />
     </header>
   );
 }
