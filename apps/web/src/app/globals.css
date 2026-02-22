@@ -61,9 +61,6 @@
   --chart-3: oklch(0.9680 0.2110 109.7692);
   --chart-4: oklch(0.8027 0.1355 349.2347);
   --chart-5: oklch(0.7395 0.2268 142.8504);
-  --font-sans: Poppins, sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: Roboto Mono, monospace;
   --shadow-color: oklch(0 0 0);
   --shadow-opacity: 0.1;
   --shadow-blur: 3px;
@@ -82,6 +79,7 @@
   --shadow-2xl: 0 1px 3px 0px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0em;
 }
+
 
 /* ─── Dark theme (toggled via .dark class, controlled by next-themes) ─────── */
 .dark {
@@ -136,9 +134,6 @@
   --chart-4: oklch(0.9680 0.2110 109.7692);
   --chart-5: oklch(0.8652 0.1768 90.3816);
   --radius: 0.5rem;
-  --font-sans: Poppins, sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
-  --font-mono: Roboto Mono, monospace;
   --shadow-color: oklch(0 0 0);
   --shadow-opacity: 0.1;
   --shadow-blur: 3px;
@@ -163,10 +158,8 @@
 
 @theme inline {
   /* Typography */
-  --font-sans: Poppins, sans-serif;
-  --font-mono: Roboto Mono, monospace;
-
-  /* Colors */
+  --font-sans: var(--font-nunito), Nunito, sans-serif;
+  --font-mono: var(--font-roboto-mono), "Roboto Mono", monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -251,7 +244,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
