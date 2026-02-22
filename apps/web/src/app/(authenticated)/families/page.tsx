@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+import { createMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = { title: "Family" };
+export const metadata = createMetadata({ title: "Family", path: "/families", noIndex: true });
 
 export default function FamiliesPage() {
   return (

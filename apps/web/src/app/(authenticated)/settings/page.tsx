@@ -1,6 +1,6 @@
-import type { Metadata } from "next";
+import { createMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = { title: "Settings" };
+export const metadata = createMetadata({ title: "Settings", path: "/settings", noIndex: true });
 
 export default function SettingsPage() {
   return (

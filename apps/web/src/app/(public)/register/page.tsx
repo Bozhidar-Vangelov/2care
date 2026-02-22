@@ -1,7 +1,11 @@
-import type { Metadata } from "next";
+import { createMetadata } from "@/lib/metadata";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
-export const metadata: Metadata = { title: "Create account" };
+export const metadata = createMetadata({
+  title: "Create Account",
+  description: "Create your free 2Care account and start tracking your baby's feeding, sleep, and milestones from day one.",
+  path: "/register",
+});
 
 export default function RegisterPage() {
   return (
