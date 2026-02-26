@@ -28,6 +28,24 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@2care/shared": [
+        "../../packages/shared/src/index.ts"
+      ],
+      "@2care/shared/*": [
+        "../../packages/shared/src/*"
+      ],
+      "@2care/schemas": [
+        "../../packages/schemas/src/index.ts"
+      ],
+      "@2care/schemas/*": [
+        "../../packages/schemas/src/*"
+      ],
+      "@2care/types": [
+        "../../packages/types/src/index.ts"
+      ],
+      "@2care/types/*": [
+        "../../packages/types/src/*"
       ]
     }
   },
